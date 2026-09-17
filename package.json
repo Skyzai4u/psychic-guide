@@ -1,0 +1,7 @@
+{
+  "name": "shahbaz-khan-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "dev": "next dev", "build": "next build", "start": "next start", "vercel-build": "next build" },
+  "dependencies": { "next": "latest", "react": "latest", "react-dom": "latest" }
+}
