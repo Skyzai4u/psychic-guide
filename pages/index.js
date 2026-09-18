@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Float, OrbitControls, Sparkles, Torus, Stars } from '@react-three/drei';
+import { Float, Sparkles, Torus, Stars } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { AVATAR_SPRITE } from '../lib/avatar';
@@ -27,15 +27,18 @@ function AvatarRig({ frame, setFrame }) {
       t.colorSpace = THREE.SRGBColorSpace;
       t.wrapS = THREE.RepeatWrapping;
       t.wrapT = THREE.ClampToEdgeWrapping;
-      t.repeat.set(1/6, 1);
-      t.offset.set(frame/6, 0);
+      t.repeat.set(1/6, 1/3);
+      t.offset.set(frame/6, 2/3);
       texture.current = t;
       setLoaded(true);
     });
   }, []);
 
   useEffect(() => {
-    if (texture.current) texture.current.offset.x = frame / 6;
+    if (texture.current) {
+      texture.current.offset.x = frame / 6;
+      texture.current.offset.y = 2/3;
+    }
   }, [frame]);
 
   useFrame((state) => {
@@ -59,7 +62,7 @@ function AvatarRig({ frame, setFrame }) {
   return <group ref={group} position={[0,-0.35,0]}>
     <Float speed={1.15} rotationIntensity={0.06} floatIntensity={0.15}>
       <mesh ref={plane} position={[0,0.35,0]} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={stop} onPointerOut={stop}>
-        <planeGeometry args={[3.05,5.15]} />
+        <planeGeometry args={[3.25,6.35]} />
         <meshStandardMaterial transparent map={loaded ? texture.current : null} alphaTest={0.04} roughness={0.72} metalness={0.08} side={THREE.DoubleSide} />
       </mesh>
     </Float>
@@ -78,19 +81,22 @@ function Scene({ frame, setFrame }) {
     <Stars radius={30} depth={12} count={700} factor={1.2} saturation={0} fade speed={0.5}/>
     <Sparkles count={90} scale={[8,6,4]} size={1.6} speed={0.25} color="#70d9ff"/>
     <AvatarRig frame={frame} setFrame={setFrame}/>
-    <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.35} minPolarAngle={Math.PI/2.2} maxPolarAngle={Math.PI/1.9}/>
-  </Canvas>;
+      </Canvas>;
 }
 
 export default function Home(){
   const [frame,setFrame]=useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setFrame((f) => (f + 1) % 6), 1800);
+    return () => clearInterval(timer);
+  }, []);
   return <>
     <Head><title>Shahbaz Khan | 3D Portfolio</title><meta name="description" content="Shahbaz Khan, IT Operations Executive, Vibe Coder, Full-Stack Developer and AI Integrator."/><meta name="viewport" content="width=device-width, initial-scale=1"/></Head>
     <nav className="nav"><div className="wrap" style={{display:'flex',width:'100%',alignItems:'center',justifyContent:'space-between'}}><div className="brand"><span className="brandmark">SK</span><span>Shahbaz Khan</span></div><div className="links"><a href="#about">About</a><a href="#work">Work</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#contact">Contact</a></div><div className="status"><span className="dot"/> Available for work</div></div></nav>
     <main className="wrap">
       <section className="hero">
         <div><div className="eyebrow">IT × AI × Automation × 3D</div><h1>Hi, I'm<br/><span className="gradient">Shahbaz Khan.</span></h1><p>IT Operations Executive, Vibe Coder and product-focused technologist building modern business systems, automation workflows and practical AI integrations.</p><div className="actions"><a className="btn primary" href="#work">Explore my work →</a><a className="btn" href="#contact">Get in touch</a></div></div>
-        <div className="hero3d"><div className="scene-label">03D / INTERACTIVE AVATAR / VIEW {frame*45}°</div><Scene frame={frame} setFrame={setFrame}/><div className="drag">DRAG TO ROTATE • AUTO ORBIT</div></div>
+        <div className="hero3d"><div className="scene-label">3D / INTERACTIVE AVATAR / VIEW {[0,45,90,180,270,315][frame]}°</div><Scene frame={frame} setFrame={setFrame}/><div className="drag">DRAG TO ROTATE • AUTO ORBIT</div></div>
       </section>
       <div className="stats"><div className="stat"><b>9+</b><span>Years of technology experience</span></div><div className="stat"><b>15+</b><span>Projects and systems delivered</span></div><div className="stat"><b>10+</b><span>Happy business clients</span></div><div className="stat"><b>100%</b><span>Focus on practical outcomes</span></div></div>
 
