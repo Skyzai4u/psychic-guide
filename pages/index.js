@@ -37,8 +37,9 @@ const skills={
  'IT & Infrastructure':['Technical Support','Technology Management','Networking','Windows Server 2003/2008','LAN','DHCP','DNS','VPN','ITIL','ERP Support','Cloud Integration']
 };
 
-function Avatar3D({onView}){
- const group=useRef(), drag=useRef({active:false,x:0}), [textures,setTextures]=useState([]);
+function Avatar3D({view,setView}){
+ const group=useRef(), [textures,setTextures]=useState([]);
+ const drag=useRef({active:false,x:0});
  useEffect(()=>{
    const loader=new THREE.TextureLoader();
    loader.load(AVATAR_SPRITE,(base)=>{
@@ -46,9 +47,14 @@ function Avatar3D({onView}){
      const arr=views.map((_,i)=>{
        const t=base.clone();
        t.colorSpace=THREE.SRGBColorSpace;
-       t.wrapS=THREE.ClampToEdgeWrapping; t.wrapT=THREE.ClampToEdgeWrapping;
-       t.repeat.set(1/6,1/3); t.offset.set(i/6,2/3);
-       t.needsUpdate=true; return t;
+       t.wrapS=THREE.ClampToEdgeWrapping;
+       t.wrapT=THREE.ClampToEdgeWrapping;
+       t.repeat.set(1/6,1/3);
+       t.offset.set(i/6,2/3);
+       t.minFilter=THREE.LinearFilter;
+       t.magFilter=THREE.LinearFilter;
+       t.needsUpdate=true;
+       return t;
      });
      setTextures(arr);
    });
@@ -56,41 +62,50 @@ function Avatar3D({onView}){
  useFrame((state)=>{
    if(!group.current)return;
    const t=state.clock.elapsedTime;
-   group.current.rotation.y += 0.0018;
-   group.current.rotation.y += ((state.pointer.x*0.08)-0)*0.004;
-   group.current.rotation.x += ((-state.pointer.y*0.025)-group.current.rotation.x)*0.03;
-   group.current.position.y=Math.sin(t*1.1)*0.06;
-   const angle=((group.current.rotation.y%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
-   const idx=Math.round(angle/(Math.PI*2/6))%6;
-   onView(idx);
+   group.current.position.y=Math.sin(t*1.1)*0.055;
+   group.current.rotation.x += ((-state.pointer.y*0.035)-group.current.rotation.x)*0.035;
+   group.current.rotation.z += ((state.pointer.x*0.012)-group.current.rotation.z)*0.035;
  });
- const down=e=>{drag.current={active:true,x:e.clientX};e.stopPropagation()};
- const move=e=>{
-   if(!drag.current.active||!group.current)return;
+ useEffect(()=>{
+   const timer=setInterval(()=>setView(v=>(v+1)%6),1700);
+   return()=>clearInterval(timer);
+ },[setView]);
+ const change=e=>{
+   e.stopPropagation();
+   if(!drag.current.active)return;
    const dx=e.clientX-drag.current.x;
-   if(Math.abs(dx)>4){group.current.rotation.y+=dx*0.012;drag.current.x=e.clientX;}
+   if(Math.abs(dx)>8){
+     setView(v=>(v+(dx<0?1:5))%6);
+     drag.current.x=e.clientX;
+   }
  };
- const up=()=>{drag.current.active=false};
- return <group ref={group} position={[0,-0.25,0]} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}>
-   <Float speed={1.1} rotationIntensity={0.025} floatIntensity={0.12}>
-     {textures.map((map,i)=><mesh key={i} rotation={[0,i*Math.PI/3,0]} position={[0,0.45,0]}>
+ return <group ref={group} position={[0,-0.25,0]}
+   onPointerDown={e=>{drag.current={active:true,x:e.clientX};e.stopPropagation()}}
+   onPointerMove={change}
+   onPointerUp={()=>drag.current.active=false}
+   onPointerLeave={()=>drag.current.active=false}>
+   {textures[view] && <group>
+     <mesh position={[0,0.42,-0.08]} scale={[1.035,1.035,1]}>
        <planeGeometry args={[3.35,6.5]}/>
-       <meshBasicMaterial map={map} transparent alphaTest={0.03} side={THREE.DoubleSide} depthWrite={false}/>
-     </mesh>)}
-   </Float>
-   <mesh position={[0,-2.75,0]} rotation={[-Math.PI/2,0,0]}>
-     <circleGeometry args={[1.55,64]}/>
-     <meshBasicMaterial color="#071a2a" transparent opacity={0.72}/>
-   </mesh>
-   <Torus args={[1.72,0.012,16,128]} rotation={[Math.PI/2,0,0]} position={[0,0.15,0]}>
-     <meshBasicMaterial color="#18d7ff" transparent opacity={0.62}/>
+       <meshBasicMaterial map={textures[view]} transparent opacity={0.16} color="#18d7ff" depthWrite={false}/>
+     </mesh>
+     <mesh position={[0,0.42,0]}>
+       <planeGeometry args={[3.35,6.5]}/>
+       <meshBasicMaterial map={textures[view]} transparent alphaTest={0.02} side={THREE.DoubleSide} depthWrite={false}/>
+     </mesh>
+     <mesh position={[0,-2.78,-0.08]} rotation={[-Math.PI/2,0,0]}>
+       <circleGeometry args={[1.55,64]}/>
+       <meshBasicMaterial color="#03111f" transparent opacity={0.8}/>
+     </mesh>
+   </group>}
+   <Torus args={[1.78,0.012,16,128]} rotation={[Math.PI/2,0,0]} position={[0,0.18,-0.25]}>
+     <meshBasicMaterial color="#18d7ff" transparent opacity={0.7}/>
    </Torus>
-   <Torus args={[2.05,0.009,16,128]} rotation={[Math.PI/2,0.3,0]} position={[0,0.15,0]}>
-     <meshBasicMaterial color="#8b5cf6" transparent opacity={0.42}/>
+   <Torus args={[2.08,0.009,16,128]} rotation={[Math.PI/2,0.35,0]} position={[0,0.18,-0.22]}>
+     <meshBasicMaterial color="#8b5cf6" transparent opacity={0.48}/>
    </Torus>
  </group>
 }
-
 function Scene({onView}){return <Canvas camera={{position:[0,0.2,8],fov:34}} dpr={[1,1.6]} gl={{antialias:true,alpha:true}}>
  <ambientLight intensity={1.5}/><directionalLight position={[4,6,5]} intensity={2.4}/>
  <pointLight position={[-4,2,3]} intensity={18} color="#18d7ff" distance={9}/><pointLight position={[4,1,2]} intensity={15} color="#8b5cf6" distance={8}/>
