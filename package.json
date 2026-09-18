@@ -1,6 +1,6 @@
 {
   "name": "shahbaz-khan-portfolio",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,7 +11,7 @@
   "dependencies": {
     "@react-three/drei": "10.7.8",
     "@react-three/fiber": "9.7.0",
-    "next": "15.5.4",
+    "next": "15.5.24",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "three": "0.180.0"
