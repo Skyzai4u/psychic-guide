@@ -1,0 +1,34 @@
+/* Production audit fixes: responsive navigation, accessibility, interaction and reduced motion. */
+.canvas-shell{position:absolute;inset:0;z-index:1;outline:none;touch-action:none}
+.canvas-shell:focus-visible{box-shadow:inset 0 0 0 2px rgba(24,215,255,.7)}
+.canvas-shell canvas{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;touch-action:none}
+.webgl-fallback{position:absolute;inset:0;display:grid;place-content:center;gap:8px;text-align:center;padding:24px;color:#dbe7f7;background:radial-gradient(circle at center,rgba(18,88,170,.2),rgba(3,9,20,.96) 65%);z-index:4}
+.webgl-fallback strong{font-size:16px}.webgl-fallback span{color:#91a0bb;font-size:12px}
+.menu-toggle{display:none;border:1px solid rgba(93,153,255,.28);background:rgba(7,14,27,.82);color:#dce8fa;border-radius:10px;padding:9px 12px;font:11px 'DM Mono';cursor:pointer}
+.links a:focus-visible,.btn:focus-visible,.contact-card a:focus-visible,.menu-toggle:focus-visible,.brand:focus-visible{outline:2px solid var(--cyan);outline-offset:4px;border-radius:5px}
+.contact-card a{color:#bdefff;text-decoration:none}.contact-card a:hover{text-decoration:underline}
+.subheading{margin-top:24px!important}
+.hero3d{isolation:isolate}
+@media(max-width:900px){
+  .nav-inner{position:relative}
+  .menu-toggle{display:block;margin-left:auto;margin-right:10px}
+  .links{display:none;position:absolute;top:64px;left:12px;right:12px;flex-direction:column;gap:0;padding:8px;border:1px solid var(--line);border-radius:16px;background:rgba(5,9,18,.96);backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+  .links.open{display:flex}
+  .links a{padding:13px 12px;border-radius:10px}
+  .links a:hover{background:rgba(24,215,255,.08)}
+  .status{font-size:10px;padding:7px 9px}
+}
+@media(max-width:560px){
+  .menu-toggle{margin-right:7px}
+  .status{display:none}
+  .scene-label{left:12px;top:12px;font-size:9px;padding:7px 8px}
+  .drag{left:12px;right:auto;bottom:14px;font-size:9px}
+  .avatar-badge{right:12px;bottom:12px;padding:9px 11px}
+  .avatar-badge small{font-size:9px}
+  .hero3d{min-height:470px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .card:hover{transform:none}
+}
