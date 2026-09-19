@@ -47,8 +47,8 @@ function Avatar3D({ reducedMotion, onLoadError }) {
  const drag = useRef({ active:false, x:0, pointerId:null });
 
  useEffect(() => {
-   const loader = new THREE.TextureLoader();
    let alive = true;
+   const loader = new THREE.TextureLoader();
    loader.load(
      OFFICIAL_PHOTO,
      t => {
@@ -62,7 +62,22 @@ function Avatar3D({ reducedMotion, onLoadError }) {
      undefined,
      () => { if (alive) onLoadError?.(); }
    );
-   return () => { alive = false; };
+   const onKeyboardRotate = e => {
+     if (!group.current) return;
+     if (e.key === 'ArrowLeft') group.current.rotation.y -= 0.08;
+     if (e.key === 'ArrowRight') group.current.rotation.y += 0.08;
+     if (e.key === 'ArrowUp') group.current.rotation.x -= 0.04;
+     if (e.key === 'ArrowDown') group.current.rotation.x += 0.04;
+     if (e.key === 'Home') {
+       group.current.rotation.x = 0;
+       group.current.rotation.y = 0;
+     }
+   };
+   window.addEventListener('keydown', onKeyboardRotate);
+   return () => {
+     alive = false;
+     window.removeEventListener('keydown', onKeyboardRotate);
+   };
  }, [onLoadError]);
 
  useFrame((state) => {
@@ -157,11 +172,7 @@ function WebGLHero() {
  }, []);
 
  const onKeyDown = e => {
-   const canvas = interactionRef.current?.querySelector('canvas');
-   if (!canvas) return;
-   if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-     canvas.dispatchEvent(new PointerEvent('pointermove', { bubbles:true }));
-   }
+   if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home'].includes(e.key)) e.preventDefault();
  };
 
  return <div
@@ -169,7 +180,7 @@ function WebGLHero() {
    ref={interactionRef}
    tabIndex={0}
    role="img"
-   aria-label="Interactive WebGL presentation of Shahbaz Khan's official portrait"
+   aria-label="Interactive WebGL presentation of Shahbaz Khan's official portrait. Use arrow keys to rotate and Home to reset."
    onKeyDown={onKeyDown}
  >
    <Scene reducedMotion={reducedMotion} onLoadError={() => setImageError(true)}/>
