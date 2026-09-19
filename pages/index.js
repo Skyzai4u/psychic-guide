@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Sparkles, Torus, Stars, Float } from '@react-three/drei';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { AVATAR_SPRITE } from '../lib/avatar';
+import { OFFICIAL_PHOTO } from '../lib/avatar';
 
 const views=[0,45,90,180,270,315];
 
@@ -37,92 +37,86 @@ const skills={
  'IT & Infrastructure':['Technical Support','Technology Management','Networking','Windows Server 2003/2008','LAN','DHCP','DNS','VPN','ITIL','ERP Support','Cloud Integration']
 };
 
-function Avatar3D({view,setView}){
- const group=useRef(), [textures,setTextures]=useState([]);
+function Avatar3D(){
+ const group=useRef(), [texture,setTexture]=useState(null);
  const drag=useRef({active:false,x:0});
  useEffect(()=>{
    const loader=new THREE.TextureLoader();
-   loader.load(AVATAR_SPRITE,(base)=>{
-     base.colorSpace=THREE.SRGBColorSpace;
-     const arr=views.map((_,i)=>{
-       const t=base.clone();
-       t.colorSpace=THREE.SRGBColorSpace;
-       t.wrapS=THREE.ClampToEdgeWrapping;
-       t.wrapT=THREE.ClampToEdgeWrapping;
-       t.repeat.set(1/6,1/3);
-       t.offset.set(i/6,2/3);
-       t.minFilter=THREE.LinearFilter;
-       t.magFilter=THREE.LinearFilter;
-       t.needsUpdate=true;
-       return t;
-     });
-     setTextures(arr);
+   loader.load(OFFICIAL_PHOTO,(t)=>{
+     t.colorSpace=THREE.SRGBColorSpace;
+     t.minFilter=THREE.LinearFilter;
+     t.magFilter=THREE.LinearFilter;
+     t.needsUpdate=true;
+     setTexture(t);
    });
  },[]);
  useFrame((state)=>{
    if(!group.current)return;
    const t=state.clock.elapsedTime;
-   group.current.position.y=Math.sin(t*1.1)*0.055;
-   group.current.rotation.x += ((-state.pointer.y*0.035)-group.current.rotation.x)*0.035;
-   group.current.rotation.z += ((state.pointer.x*0.012)-group.current.rotation.z)*0.035;
+   group.current.position.y=Math.sin(t*1.1)*0.045;
+   const targetY=state.pointer.x*0.20;
+   const targetX=-state.pointer.y*0.08;
+   group.current.rotation.y += (targetY-group.current.rotation.y)*0.045;
+   group.current.rotation.x += (targetX-group.current.rotation.x)*0.045;
  });
- useEffect(()=>{
-   const timer=setInterval(()=>setView(v=>(v+1)%6),1700);
-   return()=>clearInterval(timer);
- },[setView]);
- const change=e=>{
-   e.stopPropagation();
+ const pointerDown=e=>{drag.current={active:true,x:e.clientX};e.stopPropagation()};
+ const pointerMove=e=>{
    if(!drag.current.active)return;
    const dx=e.clientX-drag.current.x;
-   if(Math.abs(dx)>8){
-     setView(v=>(v+(dx<0?1:5))%6);
+   if(Math.abs(dx)>5){
+     group.current.rotation.y += dx*0.004;
      drag.current.x=e.clientX;
    }
  };
- return <group ref={group} position={[0,-0.25,0]}
-   onPointerDown={e=>{drag.current={active:true,x:e.clientX};e.stopPropagation()}}
-   onPointerMove={change}
-   onPointerUp={()=>drag.current.active=false}
-   onPointerLeave={()=>drag.current.active=false}>
-   {textures[view] && <group>
-     <mesh position={[0,0.42,-0.08]} scale={[1.035,1.035,1]}>
-       <planeGeometry args={[3.35,6.5]}/>
-       <meshBasicMaterial map={textures[view]} transparent opacity={0.16} color="#18d7ff" depthWrite={false}/>
-     </mesh>
-     <mesh position={[0,0.42,0]}>
-       <planeGeometry args={[3.35,6.5]}/>
-       <meshBasicMaterial map={textures[view]} transparent alphaTest={0.02} side={THREE.DoubleSide} depthWrite={false}/>
-     </mesh>
-     <mesh position={[0,-2.78,-0.08]} rotation={[-Math.PI/2,0,0]}>
-       <circleGeometry args={[1.55,64]}/>
-       <meshBasicMaterial color="#03111f" transparent opacity={0.8}/>
-     </mesh>
-   </group>}
-   <Torus args={[1.78,0.012,16,128]} rotation={[Math.PI/2,0,0]} position={[0,0.18,-0.25]}>
-     <meshBasicMaterial color="#18d7ff" transparent opacity={0.7}/>
+ return <group ref={group} position={[0,-0.25,0]} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={()=>drag.current.active=false} onPointerLeave={()=>drag.current.active=false}>
+   <Float speed={1.15} rotationIntensity={0.04} floatIntensity={0.06}>
+    {texture && <>
+      <mesh position={[0,0,-0.22]} scale={[1.08,1.08,1]}>
+       <planeGeometry args={[4.0,5.32]}/>
+       <meshBasicMaterial map={texture} transparent opacity={0.12} color="#18d7ff" depthWrite={false} side={THREE.DoubleSide}/>
+      </mesh>
+      <mesh position={[0,0,0]}>
+       <planeGeometry args={[4.0,5.32]}/>
+       <meshBasicMaterial map={texture} transparent alphaTest={0.01} depthWrite={false} side={THREE.DoubleSide}/>
+      </mesh>
+      <mesh position={[0,0,-0.08]} scale={[0.98,0.98,1]}>
+       <planeGeometry args={[4.0,5.32]}/>
+       <meshBasicMaterial map={texture} transparent opacity={0.10} color="#8b5cf6" depthWrite={false} side={THREE.DoubleSide}/>
+      </mesh>
+    </>}
+   </Float>
+   <Torus args={[2.15,0.015,20,160]} rotation={[Math.PI/2,0,0]} position={[0,-0.2,-0.48]}>
+    <meshBasicMaterial color="#18d7ff" transparent opacity={0.72}/>
    </Torus>
-   <Torus args={[2.08,0.009,16,128]} rotation={[Math.PI/2,0.35,0]} position={[0,0.18,-0.22]}>
-     <meshBasicMaterial color="#8b5cf6" transparent opacity={0.48}/>
+   <Torus args={[2.48,0.01,20,160]} rotation={[Math.PI/2,0.38,0]} position={[0,-0.2,-0.42]}>
+    <meshBasicMaterial color="#8b5cf6" transparent opacity={0.5}/>
    </Torus>
+   <mesh position={[0,-2.62,-0.45]} rotation={[-Math.PI/2,0,0]}>
+    <circleGeometry args={[1.72,64]}/>
+    <meshBasicMaterial color="#061321" transparent opacity={0.82}/>
+   </mesh>
  </group>
 }
-function Scene({onView}){return <Canvas camera={{position:[0,0.2,8],fov:34}} dpr={[1,1.6]} gl={{antialias:true,alpha:true}}>
- <ambientLight intensity={1.5}/><directionalLight position={[4,6,5]} intensity={2.4}/>
- <pointLight position={[-4,2,3]} intensity={18} color="#18d7ff" distance={9}/><pointLight position={[4,1,2]} intensity={15} color="#8b5cf6" distance={8}/>
- <Stars radius={28} depth={16} count={900} factor={1.3} saturation={0} fade speed={0.35}/>
- <Sparkles count={120} scale={[8,7,5]} size={1.5} speed={0.3} color="#77dcff"/>
- <Avatar3D onView={onView}/>
-</Canvas>}
+function Scene(){
+ return <Canvas camera={{position:[0,0.1,8],fov:34}} dpr={[1,1.6]} gl={{antialias:true,alpha:true}}>
+  <ambientLight intensity={1.3}/>
+  <directionalLight position={[4,6,5]} intensity={2.2}/>
+  <pointLight position={[-4,2,3]} intensity={14} color="#18d7ff" distance={9}/>
+  <pointLight position={[4,1,2]} intensity={12} color="#8b5cf6" distance={8}/>
+  <Stars radius={28} depth={16} count={900} factor={1.3} saturation={0} fade speed={0.35}/>
+  <Sparkles count={120} scale={[8,7,5]} size={1.5} speed={0.3} color="#77dcff"/>
+  <Avatar3D/>
+ </Canvas>
+}
 
 export default function Home(){
- const [view,setView]=useState(0);
  return <>
  <Head><title>Shahbaz Khan | IT Operations • Vibe Coder • AI Integrator</title><meta name="description" content="Muhammad Shahbaz Khan: IT Operations, retail technology, full-stack development, AI integration, automation and business systems."/></Head>
  <nav className="nav"><div className="wrap nav-inner"><div className="brand"><span className="brandmark">SK</span><span>Shahbaz Khan</span></div><div className="links"><a href="#about">About</a><a href="#work">Work</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#education">Education</a><a href="#contact">Contact</a></div><div className="status"><span className="dot"/> Available for work</div></div></nav>
  <main className="wrap">
   <section className="hero">
    <div className="hero-copy"><div className="eyebrow">IT × AI × AUTOMATION × 3D</div><h1>Hi, I’m<br/><span className="gradient">Shahbaz Khan.</span></h1><p>Technology professional combining real-world IT operations, retail systems, software development, AI integration, automation and business problem solving.</p><div className="actions"><a className="btn primary" href="#work">Explore my work →</a><a className="btn" href="#contact">Get in touch</a></div><div className="hero-mini"><span>IT Operations</span><span>Full-Stack</span><span>AI Integration</span><span>Vibe Coder</span></div></div>
-   <div className="hero3d"><div className="scene-label">3D / INTERACTIVE AVATAR / VIEW {views[view]}°</div><Scene onView={setView}/><div className="drag">DRAG TO ROTATE • AUTO ORBIT</div><div className="avatar-badge"><b>Shahbaz Khan</b><small>IT Operations • Vibe Coder</small></div></div>
+   <div className="hero3d"><div className="scene-label">3D / OFFICIAL PORTRAIT / SHAHBAZ KHAN</div><Scene/><div className="drag">MOVE POINTER • DRAG TO TILT</div><div className="avatar-badge"><b>Shahbaz Khan</b><small>IT Operations • Vibe Coder</small></div></div>
   </section>
 
   <div className="stats"><div className="stat"><b>95%</b><span>Tickets resolved within SLA</span></div><div className="stat"><b>50+</b><span>Regular retail stores</span></div><div className="stat"><b>PKR 12M+</b><span>Annual turnover managed</span></div><div className="stat"><b>3+ Days → Hours</b><span>Damage Note Sheet OCR workflow</span></div></div>
