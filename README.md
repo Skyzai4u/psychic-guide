@@ -1,16 +1,30 @@
-# Shahbaz Khan — 3D Portfolio
+# Shahbaz Khan — Interactive 3D Portfolio
 
-Premium interactive portfolio for Shahbaz Khan, focused on IT Operations, full-stack development, AI integration and automation.
+Production portfolio for Muhammad Shahbaz Khan, focused on IT Operations, retail technology, full-stack development, AI integration, automation and business systems.
 
-## Highlights
-- Interactive canvas-based 3D particle field
-- Responsive premium dark interface
-- Career timeline and selected projects
-- Technical stack and verified impact metrics
-- Lightweight static architecture for fast Vercel delivery
+## Architecture
+- Next.js 15 Pages Router
+- React 19
+- React Three Fiber + Three.js + Drei
+- Responsive dark neomorphic/glassmorphism UI
+- WebGL hero with official profile portrait
+- Keyboard/touch/pointer interaction safeguards
+- SEO metadata + Person JSON-LD
+- Vercel deployment
 
-## Tech
-HTML, CSS, JavaScript, Canvas API, Google Fonts.
+## Quality and accessibility
+- WebGL fallback for unsupported environments
+- Reduced-motion support
+- Responsive mobile navigation
+- Visible keyboard focus states
+- Clickable email, LinkedIn and GitHub contact links
+- Security response headers via vercel.json
+
+## Important 3D note
+The current hero is a WebGL 3D presentation of an official photographic portrait. It is not a rigged human GLB/GLTF mesh. A real human 3D model can be added later without changing the portfolio content architecture.
 
 ## Deployment
-Designed for zero-build static deployment on Vercel.
+The project is deployed on Vercel and connected to the GitHub repository.
+
+## Audit
+See docs/PRODUCTION-AUDIT.md for the identified issues, fixes and remaining engineering work.
