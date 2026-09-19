@@ -48,6 +48,7 @@ function Avatar3D({ reducedMotion, onLoadError }) {
 
  useEffect(() => {
    let alive = true;
+   let loadedTexture = null;
    const loader = new THREE.TextureLoader();
    loader.load(
      OFFICIAL_PHOTO,
@@ -57,6 +58,7 @@ function Avatar3D({ reducedMotion, onLoadError }) {
        t.minFilter = THREE.LinearFilter;
        t.magFilter = THREE.LinearFilter;
        t.generateMipmaps = false;
+       loadedTexture = t;
        setTexture(t);
      },
      undefined,
@@ -77,6 +79,7 @@ function Avatar3D({ reducedMotion, onLoadError }) {
    return () => {
      alive = false;
      window.removeEventListener('keydown', onKeyboardRotate);
+     loadedTexture?.dispose();
    };
  }, [onLoadError]);
 
