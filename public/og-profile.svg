@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111f"/><stop offset=".55" stop-color="#0b1530"/><stop offset="1" stop-color="#130b28"/></linearGradient>
+  <radialGradient id="r" cx=".75" cy=".25"><stop stop-color="#18d7ff" stop-opacity=".32"/><stop offset="1" stop-color="#18d7ff" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="630" fill="url(#g)"/>
+<rect width="1200" height="630" fill="url(#r)"/>
+<text x="72" y="92" fill="#18d7ff" font-family="Arial,sans-serif" font-size="20" letter-spacing="5">IT × AI × AUTOMATION × 3D</text>
+<text x="72" y="220" fill="#f4f7ff" font-family="Arial,sans-serif" font-size="72" font-weight="700">Shahbaz Khan</text>
+<text x="72" y="278" fill="#9aa8bf" font-family="Arial,sans-serif" font-size="28">IT Operations • Vibe Coder • AI Integrator</text>
+<rect x="72" y="350" width="1056" height="1" fill="#18d7ff" opacity=".25"/>
+<text x="72" y="410" fill="#b8c5d7" font-family="Arial,sans-serif" font-size="23">Retail technology, full-stack development, AI integration</text>
+<text x="72" y="448" fill="#b8c5d7" font-family="Arial,sans-serif" font-size="23">automation and practical business systems.</text>
+<circle cx="1055" cy="525" r="48" fill="none" stroke="#18d7ff" stroke-opacity=".5" stroke-width="2"/>
+<circle cx="1055" cy="525" r="18" fill="#8b5cf6" fill-opacity=".7"/>
+</svg>
