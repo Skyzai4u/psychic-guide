@@ -55,9 +55,10 @@ function Avatar3D({ reducedMotion, onLoadError }) {
      t => {
        if (!alive) { t.dispose(); return; }
        t.colorSpace = THREE.SRGBColorSpace;
-       t.minFilter = THREE.LinearFilter;
+       t.minFilter = THREE.LinearMipmapLinearFilter;
        t.magFilter = THREE.LinearFilter;
-       t.generateMipmaps = false;
+       t.generateMipmaps = true;
+       t.anisotropy = 4;
        loadedTexture = t;
        setTexture(t);
      },
@@ -147,7 +148,7 @@ function Avatar3D({ reducedMotion, onLoadError }) {
 function Scene({ reducedMotion, onLoadError }) {
  return <Canvas
    camera={{position:[0,0.1,8],fov:34}}
-   dpr={[1,1.35]}
+   dpr={[1,2]}
    gl={{antialias:true,alpha:true,powerPreference:'high-performance'}}
    fallback={<div className="webgl-fallback"><strong>Interactive 3D unavailable</strong><span>The profile remains available in the portfolio.</span></div>}
  >
